@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <files-path name="music" path="Music/"/>
+    <files-path name="music1" path="."/>
+    <external-files-path name="music2" path="Music/"/>
+    <external-files-path name="music3" path="."/>
+    <external-path name="music4" path="."/>
+</paths>

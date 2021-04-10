@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="40dp"
+        android:tint="@color/white"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:clickable="true"
+        android:src="@drawable/left"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="8sp"
+            android:padding="16dp"
+            android:text=""
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/modality"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="8sp"
+            android:padding="16dp"
+            android:text=""
+            android:textColor="@color/white"
+            android:textAlignment="center"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="60dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:id="@+id/durationLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal"
+            android:paddingStart="32dp"
+            android:paddingLeft="32dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="32dp"
+            android:paddingRight="32dp">
+
+            <TextView
+                android:id="@+id/treatmentProgress"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="start"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:padding="0dp"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/treatmentDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="end"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:padding="0dp"
+                android:textColor="@color/white"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </LinearLayout>
+        <SeekBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:paddingStart="32dp"
+            android:paddingLeft="32dp"
+            android:paddingTop="0dp"
+            android:paddingEnd="32dp"
+            android:paddingRight="32dp"
+            android:paddingBottom="0dp"
+            android:progress="0"
+            android:progressBackgroundTint="#444444"
+            android:progressBackgroundTintMode="src_over"
+            android:progressTint="@color/white"
+            android:progressTintMode="src_over"
+            android:splitTrack="false"
+            android:thumb="@drawable/player_thumb"
+            android:thumbTint="@color/white"/>
+
+        <LinearLayout
+            android:id="@+id/llButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingLeft="16dp"
+            android:paddingEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:paddingRight="16dp">
+            <ImageButton
+                android:id="@+id/buttonPlay"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:tint="@color/white"
+                android:background="@android:color/transparent"
+                android:contentDescription="Play / Pause"
+                android:scaleType="fitCenter"
+                android:soundEffectsEnabled="false"
+                android:src="@drawable/play_button" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

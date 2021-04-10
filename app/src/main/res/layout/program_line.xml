@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rvProgramLine"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorProgram">
+
+    <TextView
+        android:id="@+id/tvProgramName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start"
+        android:layout_marginEnd="10dp"
+        android:gravity="start"
+        android:padding="10dp"
+        android:textColor="@android:color/primary_text_light"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/tvProgramDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:gravity="end"
+        android:padding="15dp"
+        android:textColor="@color/textLight"
+        android:textSize="12sp" />
+</RelativeLayout>
