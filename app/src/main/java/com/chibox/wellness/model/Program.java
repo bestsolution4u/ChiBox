@@ -59,7 +59,6 @@ public class Program implements Parcelable {
                 this.format = AudioFormat.ENCODING_PCM_FLOAT;
                 break;
         }
-        Log.e("aaa", "" + this.format);
         this.duration = (int) (this.fileSize / ((long) (this.sampleRate * this.modality * this.resolution)));
         this.inputBufferSize = AudioTrack.getMinBufferSize(this.sampleRate, this.modality == 1 ? AudioFormat.CHANNEL_OUT_MONO : AudioFormat.CHANNEL_OUT_STEREO, this.format);
     }

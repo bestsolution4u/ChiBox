@@ -30,9 +30,6 @@
         android:theme="@style/Theme.ChiBoxWellness">
         <activity android:name=".activity.WavPlayer"></activity>
         <activity
-            android:name=".activity.AudioPlayerActivity"
-            android:screenOrientation="portrait" />
-        <activity
             android:name=".SplashActivity"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -56,11 +53,6 @@
                 <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
-
-        <service
-            android:name=".service.ChiBoxService"
-            android:enabled="true"
-            android:exported="false" />
 
         <receiver
             android:name=".receiver.BootReceiver"

@@ -5,10 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.text.TextUtils;
 import android.util.JsonReader;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -17,7 +14,6 @@ import android.widget.ListView;
 import com.chibox.wellness.R;
 import com.chibox.wellness.adapter.ProgramAdapter;
 import com.chibox.wellness.model.Program;
-import com.chibox.wellness.service.ChiBoxService;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,11 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
-
-import static android.os.Environment.DIRECTORY_MUSIC;
-import static android.os.Environment.getStorageDirectory;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -59,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 }
             }
         });
-        startService(new Intent(this, ChiBoxService.class));
     }
 
     private void getPrograms() {

@@ -10,8 +10,11 @@ import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -37,19 +40,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class WavPlayer extends AppCompatActivity {
 
     Program mProgram;
     DevicePolicyManager deviceManger;
     ComponentName compName;
-    AudioManager mAudioManager;
-    AudioPlayerActivity.SettingsContentObserver mSettingsContentObserver;
-    TextView mProgressText;
+    TextView tvPlayerPosition, tvDuration;
     SeekBar mProgressBar;
     ImageButton mPlayButton;
-    AudioTrack mAudioTrack;
-    InputStream mInputSream;
+    private MediaPlayer mediaPlayer;
+    int mDuration = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,19 +64,14 @@ public class WavPlayer extends AppCompatActivity {
         setContentView(R.layout.activity_wav_player);
         deviceManger = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         compName = new ComponentName(this, ScreenOffAdminReceiver.class);
-        mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        mAudioManager.setStreamVolume(1, mAudioManager.getStreamMaxVolume(1), 0);
-        mAudioManager.setStreamVolume(3, mAudioManager.getStreamMaxVolume(3), 0);
 
         Intent intent = getIntent();
         mProgram = (Program) intent.getParcelableExtra("program");
 
         ((TextView) findViewById(R.id.title)).setText(mProgram.title);
-        ((TextView) findViewById(R.id.treatmentDuration)).setText("" + mProgram.duration);
-        mProgressText = (TextView) findViewById(R.id.treatmentProgress);
-        mProgressText.setText("0");
+        tvDuration = findViewById(R.id.tvDuration);
+        tvPlayerPosition = (TextView) findViewById(R.id.tvPlayerPosition);
         mProgressBar = (SeekBar) findViewById(R.id.progressBar);
-        mProgressBar.setMax((int) (mProgram.fileSize / ((long) mProgram.inputBufferSize)));
         mProgressBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -84,7 +82,19 @@ public class WavPlayer extends AppCompatActivity {
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playAudio();
+                if (mediaPlayer != null) {
+                    if (mediaPlayer.isPlaying()) {
+                        changeViewImageResource((ImageButton) v, R.drawable.play_button);
+                        mediaPlayer.pause();
+                    } else {
+                        changeViewImageResource((ImageButton) v, R.drawable.pause_button);
+                        mediaPlayer.start();
+                        boolean active = deviceManger.isAdminActive(compName);
+                        if (active) {
+                            deviceManger.lockNow();
+                        }
+                    }
+                }
             }
         });
         ((ImageButton) findViewById(R.id.btnBack)).setOnClickListener(new View.OnClickListener() {
@@ -93,6 +103,17 @@ public class WavPlayer extends AppCompatActivity {
                 onBackPressed();
             }
         });
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateProgress();
+                    }
+                });
+            }
+        },0, 1000);
         prepareAudio();
     }
 
@@ -122,17 +143,29 @@ public class WavPlayer extends AppCompatActivity {
                 out.close();
                 out = null;
             }
-        }  catch (FileNotFoundException fnfe1) {
+            mediaPlayer = MediaPlayer.create(this, Uri.fromFile(outputFile));
+            mediaPlayer.setLooping(false);
+            mDuration = mediaPlayer.getDuration();
+            tvDuration.setText("" + ((int)(mDuration / 1000)));
+            tvPlayerPosition.setText("0");
+            mProgressBar.setMax(mDuration);
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    PowerManager.WakeLock  wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                            PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                            PowerManager.ON_AFTER_RELEASE, "com.chibox.wellness.activity::WakeLock");
+                    wakeLock.acquire(10);
+                    wakeLock.release();
+                    changeViewImageResource(mPlayButton, R.drawable.play_button);
+                    mProgressBar.setProgress(0);
+                    tvPlayerPosition.setText("0");
+                }
+            });
+        } catch (Exception fnfe1) {
             Log.e("tag", fnfe1.getMessage());
         }
-        catch (Exception e) {
-            Log.e("tag", e.getMessage());
-        }
-    }
-
-    public void updateProgress(long total) {
-        mProgressBar.setProgress((int) (total / ((long) mProgram.inputBufferSize)));
-        mProgressText.setText("" + (int) (total / ((long) ((mProgram.sampleRate * 2) * mProgram.resolution))));
     }
 
     public void changeViewImageResource(final ImageView imageView, @DrawableRes final int resId) {
@@ -145,61 +178,21 @@ public class WavPlayer extends AppCompatActivity {
         }, 200);
     }
 
-    public void initialize() {
-        try {
-            mInputSream = new FileInputStream(new File(mProgram.filename));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+    public void updateProgress() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            int position = mediaPlayer.getCurrentPosition();
+            tvPlayerPosition.setText("" + ((int)(position / 1000)));
+            mProgressBar.setProgress(position);
         }
-        mAudioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, mProgram.sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT, AudioTrack.getMinBufferSize(mProgram.sampleRate, AudioFormat.CHANNEL_CONFIGURATION_MONO, AudioFormat.ENCODING_PCM_16BIT), AudioTrack.MODE_STREAM);
-        mAudioTrack.play();
     }
 
-    public void playAudio() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                initialize();
-                long total = 0;
-                byte j = 85;
-                boolean completed = false;
-                int bufferSize = 512;
-                int i = 0;
-                byte[] s = new byte[bufferSize];
-                DataInputStream dis = new DataInputStream(mInputSream);
-                if (mAudioTrack == null) return;
-                while (true) {
-                    try {
-                        i = dis.read(s, 0, bufferSize);
-                    } catch (IOException ex) {
-                        i = -1;
-                    }
-                    if (i == -1) break;
-                    total += (long) i;
-                    updateProgress(total);
-                    if (mProgram.encrypted) {
-                        byte k = j;
-                        for (int j2 = 0; j2 < s.length; j2++) {
-                            byte p = s[j2];
-                            s[j2] = (byte) (s[j2] ^ (k ^ 68));
-                            k = p;
-                        }
-                        j = k;
-                    }
-                    mAudioTrack.write(s, 0, i);
-                }
-                try {
-                    dis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                completed = true;
-                mAudioTrack.stop();
-                mAudioTrack.flush();
-                mAudioTrack.release();
-            }
-        });
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
-
 }
