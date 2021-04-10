@@ -154,24 +154,24 @@ public class WavPlayer extends AppCompatActivity {
             out = new FileOutputStream(outputFile);
             byte[] buffer = new byte[1024 * 1024];
             int read;
-            boolean isFirstSegment = true;
-            long start = System.currentTimeMillis();
+            byte j = 85;
             while ((read = in.read(buffer)) != -1) {
-                if (isFirstSegment) {
-                    byte[] slice = Arrays.copyOfRange(buffer, 99, read);
-                    out.write(slice, 0, slice.length);
-                } else {
-                    out.write(buffer, 0, read);
+                if (mProgram.encrypted) {
+                    byte k = j;
+                    for (int j2 = 0; j2 < buffer.length; j2++) {
+                        byte p = buffer[j2];
+                        buffer[j2] = (byte) (buffer[j2] ^ (k ^ 68));
+                        k = p;
+                    }
+                    j = k;
                 }
-                isFirstSegment = false;
+                out.write(buffer, 0, read);
             }
             in.close();
             in = null;
             out.flush();
             out.close();
             out = null;
-            long end = System.currentTimeMillis();
-            Log.e("WavPlayer", "Elapsed: " + (end - start));
             mediaPlayer.setDataSource(outputFile.getPath());
             mediaPlayer.prepareAsync();
         } catch (Exception fnfe1) {
