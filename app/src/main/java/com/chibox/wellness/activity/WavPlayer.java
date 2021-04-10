@@ -114,6 +114,31 @@ public class WavPlayer extends AppCompatActivity {
                 });
             }
         },0, 1000);
+        mediaPlayer = new MediaPlayer();
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                mediaPlayer.setLooping(false);
+                mDuration = mediaPlayer.getDuration();
+                tvDuration.setText("" + ((int)(mDuration / 1000)));
+                tvPlayerPosition.setText("0");
+                mProgressBar.setMax(mDuration);
+            }
+        });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                PowerManager.WakeLock  wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
+                        PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                        PowerManager.ON_AFTER_RELEASE, "com.chibox.wellness.activity::WakeLock");
+                wakeLock.acquire(10);
+                wakeLock.release();
+                changeViewImageResource(mPlayButton, R.drawable.play_button);
+                mProgressBar.setProgress(0);
+                tvPlayerPosition.setText("0");
+            }
+        });
         prepareAudio();
     }
 
@@ -122,47 +147,33 @@ public class WavPlayer extends AppCompatActivity {
         OutputStream out = null;
         try {
             File outputFile = new File(getExternalCacheDir(), mProgram.title + "-" + mProgram.fileSize + ".wav");
-            if (!outputFile.exists()) {
-                in = new FileInputStream(mProgram.filename);
-                out = new FileOutputStream(outputFile);
-                byte[] buffer = new byte[1024];
-                int read;
-                boolean isFirstSegment = true;
-                while ((read = in.read(buffer)) != -1) {
-                    if (isFirstSegment) {
-                        byte[] slice = Arrays.copyOfRange(buffer, 99, read);
-                        out.write(slice, 0, slice.length);
-                    } else {
-                        out.write(buffer, 0, read);
-                    }
-                    isFirstSegment = false;
-                }
-                in.close();
-                in = null;
-                out.flush();
-                out.close();
-                out = null;
+            if (outputFile.exists()) {
+                outputFile.delete();
             }
-            mediaPlayer = MediaPlayer.create(this, Uri.fromFile(outputFile));
-            mediaPlayer.setLooping(false);
-            mDuration = mediaPlayer.getDuration();
-            tvDuration.setText("" + ((int)(mDuration / 1000)));
-            tvPlayerPosition.setText("0");
-            mProgressBar.setMax(mDuration);
-            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mp) {
-                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                    PowerManager.WakeLock  wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
-                            PowerManager.ACQUIRE_CAUSES_WAKEUP |
-                            PowerManager.ON_AFTER_RELEASE, "com.chibox.wellness.activity::WakeLock");
-                    wakeLock.acquire(10);
-                    wakeLock.release();
-                    changeViewImageResource(mPlayButton, R.drawable.play_button);
-                    mProgressBar.setProgress(0);
-                    tvPlayerPosition.setText("0");
+            in = new FileInputStream(mProgram.filename);
+            out = new FileOutputStream(outputFile);
+            byte[] buffer = new byte[1024 * 1024];
+            int read;
+            boolean isFirstSegment = true;
+            long start = System.currentTimeMillis();
+            while ((read = in.read(buffer)) != -1) {
+                if (isFirstSegment) {
+                    byte[] slice = Arrays.copyOfRange(buffer, 99, read);
+                    out.write(slice, 0, slice.length);
+                } else {
+                    out.write(buffer, 0, read);
                 }
-            });
+                isFirstSegment = false;
+            }
+            in.close();
+            in = null;
+            out.flush();
+            out.close();
+            out = null;
+            long end = System.currentTimeMillis();
+            Log.e("WavPlayer", "Elapsed: " + (end - start));
+            mediaPlayer.setDataSource(outputFile.getPath());
+            mediaPlayer.prepareAsync();
         } catch (Exception fnfe1) {
             Log.e("tag", fnfe1.getMessage());
         }
