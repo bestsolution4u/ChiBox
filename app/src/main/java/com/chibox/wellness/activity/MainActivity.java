@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.JsonReader;
 import android.view.View;
 import android.widget.AdapterView;
@@ -58,12 +59,13 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
                 loadPrograms(new File(sdPath));
             }
         } else {
-            for (File f : getExternalMediaDirs()) {
-                String sdPath2 = f.toString();
-                loadPrograms(new File(sdPath2.substring(0, sdPath2.length() - 33) + "/Music/ChiBox"));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                for (File f : getExternalMediaDirs()) {
+                    String sdPath2 = f.toString();
+                    loadPrograms(new File(sdPath2.substring(0, sdPath2.length() - 33) + "/Music/ChiBox"));
+                }
             }
         }
-
     }
 
     private void loadPrograms(File path) {
