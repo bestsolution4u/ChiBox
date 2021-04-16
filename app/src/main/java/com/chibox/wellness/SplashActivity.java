@@ -19,6 +19,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chibox.wellness.activity.MainActivity;
 import com.chibox.wellness.receiver.ScreenOffAdminReceiver;
@@ -57,6 +58,7 @@ public class SplashActivity extends AppCompatActivity {
         }
 
         if (!hasPermissions(this, PERMISSIONS)) {
+            Toast.makeText(this, "Request Permissions", Toast.LENGTH_SHORT).show();
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE);
         } else {
             canDrawOverlays();
@@ -75,20 +77,35 @@ public class SplashActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == OVERLAY_REQUEST_CODE) {
+            Toast.makeText(this, "Overlay Request: " + OVERLAY_REQUEST_CODE, Toast.LENGTH_SHORT).show();
             checkDeviceAdmin();
         } else if (requestCode == RESULT_ENABLE) {
+            Toast.makeText(this, "Device Admin Check: " + RESULT_ENABLE + ", " + resultCode, Toast.LENGTH_SHORT).show();
             goMain();
         }
     }
 
     public void canDrawOverlays() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Toast.makeText(this, "Request Draw Overlays", Toast.LENGTH_SHORT).show();
+                Intent intent2 = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + this.getPackageName()));
+                startActivityForResult(intent2, OVERLAY_REQUEST_CODE);
+            } else {
+                checkDeviceAdmin();
+            }
+        } else {
+            checkDeviceAdmin();
+        }
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            Toast.makeText(this, "", Toast.LENGTH_SHORT).show();
             Intent intent2 = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                     Uri.parse("package:" + this.getPackageName()));
             startActivityForResult(intent2, OVERLAY_REQUEST_CODE);
         } else {
-            checkDeviceAdmin();
-        }
+
+        }*/
     }
 
     public boolean hasPermissions(Context context, String... permissions) {
@@ -103,6 +120,7 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void checkDeviceAdmin() {
+        Toast.makeText(this, "Check Device Admin", Toast.LENGTH_SHORT).show();
         deviceManger = (DevicePolicyManager)getSystemService(Context.DEVICE_POLICY_SERVICE);
         compName = new ComponentName(this, ScreenOffAdminReceiver.class);
         boolean active = deviceManger.isAdminActive(compName);
@@ -117,13 +135,30 @@ public class SplashActivity extends AppCompatActivity {
     }
 
     public void goMain() {
+        /*Toast.makeText(this, "goMain", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();*/
+        Toast.makeText(this, "goMain", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+                SplashActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SplashActivity.this, "Opening Main screen", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(SplashActivity.this, MainActivity.class);
+                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
+                /*Toast.makeText(SplashActivity.this, "Opening Main screen", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
-                finish();
+                finish();*/
             }
         }, 3000);
     }

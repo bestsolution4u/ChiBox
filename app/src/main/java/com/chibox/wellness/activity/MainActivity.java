@@ -7,10 +7,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.JsonReader;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.chibox.wellness.R;
 import com.chibox.wellness.adapter.ProgramAdapter;
@@ -24,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
@@ -55,15 +58,21 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void getPrograms() {
         if (Build.MANUFACTURER.equals("FiiO")) {
+            Toast.makeText(this, "Get Programs in Fiio", Toast.LENGTH_SHORT).show();
+            Log.e("ChiBox", "--------------- Get Programs Fiio -----------");
             for (String sdPath : new String[]{"/mnt/internal_sd/Music/ChiBox", "/mnt/external_sd1/Music/ChiBox", "/mnt/external_sd2/Music/ChiBox"}) {
                 loadPrograms(new File(sdPath));
             }
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Log.e("ChiBox", "--------------- Get Programs No Fiio -----------");
+                Toast.makeText(this, "Get Programs in LOLLIPOP and above", Toast.LENGTH_SHORT).show();
                 for (File f : getExternalMediaDirs()) {
                     String sdPath2 = f.toString();
                     loadPrograms(new File(sdPath2.substring(0, sdPath2.length() - 33) + "/Music/ChiBox"));
                 }
+            } else {
+                Toast.makeText(this, "Get Programs in LOLLIPOP and below", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -72,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         if (!path.exists()) {
             path.mkdirs();
         }
-        ArrayList<String> files = new ArrayList<String>(Arrays.asList(path.list()));
+        if (path.list() == null) return;
+        ArrayList<String> files = new ArrayList<String>(Arrays.asList(Objects.requireNonNull(path.list())));
         Collections.sort(files, new Comparator<String>() {
             @Override
             public int compare(String s1, String s2) {

@@ -25,6 +25,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chibox.wellness.R;
 import com.chibox.wellness.model.Program;
@@ -53,6 +54,7 @@ public class WavPlayer extends AppCompatActivity {
     ImageButton mPlayButton;
     private MediaPlayer mediaPlayer;
     int mDuration = 0;
+    boolean prepared = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +121,7 @@ public class WavPlayer extends AppCompatActivity {
             @Override
             public void onPrepared(MediaPlayer mp) {
                 mediaPlayer.setLooping(false);
+                prepared = true;
                 mDuration = mediaPlayer.getDuration();
                 tvDuration.setText("" + ((int)(mDuration / 1000)));
                 tvPlayerPosition.setText("0");
@@ -128,6 +131,10 @@ public class WavPlayer extends AppCompatActivity {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
+                if (!prepared) {
+                    Toast.makeText(WavPlayer.this, "Wait while loading audio...", Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
                 PowerManager.WakeLock  wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK |
                         PowerManager.ACQUIRE_CAUSES_WAKEUP |
