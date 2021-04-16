@@ -30,6 +30,7 @@ import android.widget.Toast;
 import com.chibox.wellness.R;
 import com.chibox.wellness.model.Program;
 import com.chibox.wellness.receiver.ScreenOffAdminReceiver;
+import com.chibox.wellness.util.TimeUtils;
 
 import java.io.DataInputStream;
 import java.io.File;
@@ -123,8 +124,8 @@ public class WavPlayer extends AppCompatActivity {
                 mediaPlayer.setLooping(false);
                 prepared = true;
                 mDuration = mediaPlayer.getDuration();
-                tvDuration.setText("" + ((int)(mDuration / 1000)));
-                tvPlayerPosition.setText("0");
+                tvDuration.setText(TimeUtils.formatDuration(((int)(mDuration / 1000))));
+                tvPlayerPosition.setText("00:00");
                 mProgressBar.setMax(mDuration);
             }
         });
@@ -143,7 +144,7 @@ public class WavPlayer extends AppCompatActivity {
                 wakeLock.release();
                 changeViewImageResource(mPlayButton, R.drawable.play_button);
                 mProgressBar.setProgress(0);
-                tvPlayerPosition.setText("0");
+                tvPlayerPosition.setText("00:00");
             }
         });
         prepareAudio();
@@ -199,7 +200,7 @@ public class WavPlayer extends AppCompatActivity {
     public void updateProgress() {
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             int position = mediaPlayer.getCurrentPosition();
-            tvPlayerPosition.setText("" + ((int)(position / 1000)));
+            tvPlayerPosition.setText(TimeUtils.formatDuration(((int)(position / 1000))));
             mProgressBar.setProgress(position);
         }
     }

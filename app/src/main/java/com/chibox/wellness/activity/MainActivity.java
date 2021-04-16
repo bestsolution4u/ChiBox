@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent playerIntent = new Intent(this, WavPlayer.class);
         playerIntent.putExtra("program", mPrograms.get(position));
+        playerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(playerIntent);
     }
 }

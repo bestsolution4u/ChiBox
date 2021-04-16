@@ -12,7 +12,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Programs"
+            android:text="ChiBox"
             android:textAlignment="center"
             android:textSize="24sp"
             android:paddingVertical="20dp" />

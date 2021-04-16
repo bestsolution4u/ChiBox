@@ -149,7 +149,7 @@ public class SplashActivity extends AppCompatActivity {
                     public void run() {
                         Toast.makeText(SplashActivity.this, "Opening Main screen", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(SplashActivity.this, MainActivity.class);
-                        //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
                     }

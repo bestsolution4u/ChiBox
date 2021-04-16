@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.chibox.wellness.R;
 import com.chibox.wellness.model.Program;
+import com.chibox.wellness.util.TimeUtils;
 
 import java.util.ArrayList;
 
@@ -45,7 +46,7 @@ public class ProgramAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.program_line, null);
         }
         ((TextView) view.findViewById(R.id.tvProgramName)).setText(program.title);
-        ((TextView) view.findViewById(R.id.tvProgramDuration)).setText("" + program.duration);
+        ((TextView) view.findViewById(R.id.tvProgramDuration)).setText(TimeUtils.formatDuration(program.duration));
         return view;
     }
 
