@@ -28,7 +28,7 @@ public class SplashActivity extends AppCompatActivity {
     private boolean fromBoot;
     private TextView tvWelcome;
 
-    int OVERLAY_REQUEST_CODE = 1, PERMISSION_REQUEST_CODE = 2;
+    int OVERLAY_REQUEST_CODE = 101, PERMISSION_REQUEST_CODE = 102, RESULT_ENABLE = 103;
     String[] PERMISSIONS = {
             Manifest.permission.RECEIVE_BOOT_COMPLETED,
             Manifest.permission.WAKE_LOCK,
@@ -40,7 +40,6 @@ public class SplashActivity extends AppCompatActivity {
             Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.DISABLE_KEYGUARD,
     };
-    static final int RESULT_ENABLE = 1;
     DevicePolicyManager deviceManger;
     ComponentName compName;
 
