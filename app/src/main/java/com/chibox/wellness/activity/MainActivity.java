@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
     private void getPrograms() {
         if (Build.MANUFACTURER.equals("FiiO")) {
-            Toast.makeText(this, "Get Programs in Fiio", Toast.LENGTH_SHORT).show();
             Log.e("ChiBox", "--------------- Get Programs Fiio -----------");
             for (String sdPath : new String[]{"/mnt/internal_sd/Music/ChiBox", "/mnt/external_sd1/Music/ChiBox", "/mnt/external_sd2/Music/ChiBox"}) {
                 loadPrograms(new File(sdPath));
@@ -66,13 +65,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
         } else {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Log.e("ChiBox", "--------------- Get Programs No Fiio -----------");
-                Toast.makeText(this, "Get Programs in LOLLIPOP and above", Toast.LENGTH_SHORT).show();
                 for (File f : getExternalMediaDirs()) {
                     String sdPath2 = f.toString();
                     loadPrograms(new File(sdPath2.substring(0, sdPath2.length() - 33) + "/Music/ChiBox"));
                 }
             } else {
-                Toast.makeText(this, "Get Programs in LOLLIPOP and below", Toast.LENGTH_SHORT).show();
             }
         }
     }
