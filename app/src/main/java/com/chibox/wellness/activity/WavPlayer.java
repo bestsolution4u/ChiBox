@@ -172,8 +172,6 @@ public class WavPlayer extends AppCompatActivity {
         prepareAudio();
     }
 
-
-
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         Log.e("WavPlayer", "" + keyCode);
