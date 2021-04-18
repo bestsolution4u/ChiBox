@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,17 +11,18 @@
         android:layout_height="40dp"
         android:layout_marginLeft="20dp"
         android:layout_marginTop="40dp"
-        android:tint="@color/white"
         android:background="@android:color/transparent"
-        android:scaleType="fitXY"
         android:clickable="true"
-        android:src="@drawable/left"/>
+        android:scaleType="fitXY"
+        android:src="@drawable/left"
+        android:tint="@color/white" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_centerVertical="true">
+        android:layout_centerVertical="true"
+        android:orientation="vertical">
+
         <TextView
             android:id="@+id/title"
             android:layout_width="match_parent"
@@ -30,8 +30,8 @@
             android:lineSpacingExtra="8sp"
             android:padding="16dp"
             android:text=""
-            android:textColor="@color/white"
             android:textAlignment="center"
+            android:textColor="@color/white"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -42,8 +42,8 @@
             android:lineSpacingExtra="8sp"
             android:padding="16dp"
             android:text=""
-            android:textColor="@color/white"
             android:textAlignment="center"
+            android:textColor="@color/white"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -53,6 +53,7 @@
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="60dp"
         android:orientation="vertical">
+
         <LinearLayout
             android:id="@+id/durationLayout"
             android:layout_width="match_parent"
@@ -88,6 +89,7 @@
                 android:textSize="12sp"
                 app:layout_constraintEnd_toEndOf="parent" />
         </LinearLayout>
+
         <SeekBar
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyleHorizontal"
@@ -107,29 +109,42 @@
             android:progressTintMode="src_over"
             android:splitTrack="false"
             android:thumb="@drawable/player_thumb"
-            android:thumbTint="@color/white"/>
+            android:thumbTint="@color/white" />
 
         <LinearLayout
             android:id="@+id/llButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:paddingStart="16dp"
             android:paddingLeft="16dp"
             android:paddingEnd="16dp"
-            android:layout_marginTop="16dp"
             android:paddingRight="16dp">
+
+            <ImageButton
+                android:id="@+id/buttonReset"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:contentDescription="Reset"
+                android:scaleType="fitCenter"
+                android:soundEffectsEnabled="false"
+                android:src="@drawable/reset_button"
+                android:tint="@color/white" />
+
             <ImageButton
                 android:id="@+id/buttonPlay"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_weight="1"
-                android:tint="@color/white"
                 android:background="@android:color/transparent"
                 android:contentDescription="Play / Pause"
                 android:scaleType="fitCenter"
                 android:soundEffectsEnabled="false"
-                android:src="@drawable/play_button" />
+                android:src="@drawable/play_button"
+                android:tint="@color/white" />
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>

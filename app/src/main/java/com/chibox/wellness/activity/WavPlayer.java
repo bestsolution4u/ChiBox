@@ -53,10 +53,12 @@ public class WavPlayer extends AppCompatActivity {
     ComponentName compName;
     TextView tvPlayerPosition, tvDuration;
     SeekBar mProgressBar;
-    ImageButton mPlayButton;
+    ImageButton mPlayButton, mResetButton;
     private MediaPlayer mediaPlayer;
     int mDuration = 0;
     boolean prepared = false;
+    AudioManager audioManager;
+    int maxVol;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +99,21 @@ public class WavPlayer extends AppCompatActivity {
                         if (active) {
                             deviceManger.lockNow();
                         }
+                    }
+                }
+            }
+        });
+        mResetButton = findViewById(R.id.buttonReset);
+        mResetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer != null) {
+                    mediaPlayer.seekTo(0);
+                    changeViewImageResource((ImageButton) mPlayButton, R.drawable.pause_button);
+                    mediaPlayer.start();
+                    boolean active = deviceManger.isAdminActive(compName);
+                    if (active) {
+                        deviceManger.lockNow();
                     }
                 }
             }
@@ -148,13 +165,24 @@ public class WavPlayer extends AppCompatActivity {
                 tvPlayerPosition.setText("00:00");
             }
         });
+
+        audioManager = (AudioManager)getSystemService(Context.AUDIO_SERVICE);
+        maxVol = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVol, 0);
         prepareAudio();
     }
 
+
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
-                || keyCode == KeyEvent.KEYCODE_VOLUME_UP;
+        Log.e("WavPlayer", "" + keyCode);
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN
+                || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            return true;
+        } else {
+            return super.onKeyDown(keyCode, event);
+        }
     }
 
     public void prepareAudio() {
@@ -205,6 +233,7 @@ public class WavPlayer extends AppCompatActivity {
     }
 
     public void updateProgress() {
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVol, 0);
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             int position = mediaPlayer.getCurrentPosition();
             tvPlayerPosition.setText(TimeUtils.formatDuration(((int)(position / 1000))));
